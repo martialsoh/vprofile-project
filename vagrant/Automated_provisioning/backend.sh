@@ -1,5 +1,5 @@
 #!/bin/bash
-DATABASE_PASS='admin123'
+DATABASE_PASS='yann'
 
 # MEmcache
 yum install epel-release -y
@@ -10,13 +10,16 @@ systemctl status memcached
 memcached -p 11211 -U 11111 -u memcached -d
 
 # Rabbit
-yum install socat -y
-yum install erlang -y
+yum update -y
 yum install wget -y
-wget https://www.rabbitmq.com/releases/rabbitmq-server/v3.6.10/rabbitmq-server-3.6.10-1.el7.noarch.rpm
-rpm --import https://www.rabbitmq.com/rabbitmq-release-signing-key.asc
-yum update
-rpm -Uvh rabbitmq-server-3.6.10-1.el7.noarch.rpm
+yum install epel-release -y
+wget http://packages.erlang-solutions.com/erlang-solutions-1.0-1.noarch.rpm
+sudo rpm -Uvh erlang-solutions-1.0-1.noarch.rpm
+sudo yum -y install erlang socat logrotate
+wget https://github.com/rabbitmq/rabbitmq-server/releases/download/v3.8.19/rabbitmq-server-3.8.19-1.el7.noarch.rpm
+sudo rpm --import https://www.rabbitmq.com/rabbitmq-signing-key-public.asc
+yum update -y
+sudo yum -y install rabbitmq-server*.rpm
 systemctl start rabbitmq-server
 systemctl enable rabbitmq-server
 systemctl status rabbitmq-server
@@ -43,8 +46,8 @@ mysql -u root -p"$DATABASE_PASS" -e "DELETE FROM mysql.user WHERE User=''"
 mysql -u root -p"$DATABASE_PASS" -e "DELETE FROM mysql.db WHERE Db='test' OR Db='test\_%'"
 mysql -u root -p"$DATABASE_PASS" -e "FLUSH PRIVILEGES"
 mysql -u root -p"$DATABASE_PASS" -e "create database accounts"
-mysql -u root -p"$DATABASE_PASS" -e "grant all privileges on accounts.* TO 'admin'@'localhost' identified by 'admin123'"
-mysql -u root -p"$DATABASE_PASS" -e "grant all privileges on accounts.* TO 'admin'@'app01' identified by 'admin123'"
+mysql -u root -p"$DATABASE_PASS" -e "grant all privileges on accounts.* TO 'admin'@'localhost' identified by 'yann'"
+mysql -u root -p"$DATABASE_PASS" -e "grant all privileges on accounts.* TO 'admin'@'app01' identified by 'yann'"
 mysql -u root -p"$DATABASE_PASS" accounts < /vagrant/vprofile-repo/src/main/resources/db_backup.sql
 mysql -u root -p"$DATABASE_PASS" -e "FLUSH PRIVILEGES"
 
